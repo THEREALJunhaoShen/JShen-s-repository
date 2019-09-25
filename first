@@ -1,0 +1,93 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+int main (int argc, char* argv[]){
+    FILE* readfile = fopen(argv[1],"r");
+    if(readfile == NULL){
+        return 0;
+    }
+    int length = sizeof(readfile)/ sizeof(int);
+    int tmp[length];
+    int i,j,a;
+    for(i = 0; i<length; i++){
+        fscanf(readfile, "%d", &tmp[i]);
+    }
+    int left = 0, right = length-1;
+    while (left < right)
+    {
+        while (tmp[left]%2 == 0 && left < right)
+            left++;
+        while (tmp[right]%2 != 0 && left < right)
+            right--;
+        if (left < right)
+        {
+            int temp = tmp[left];
+            tmp[left] = tmp[right];
+            tmp[right] = temp;
+            left++;
+            right--;
+        }
+    }
+    int start = 0, end = length - 1;
+    int newLeft = length - left;
+    int temp;
+    while (start < end)
+    {
+        temp = tmp[start];
+        tmp[start] = tmp[end];
+        tmp[end] = temp;
+        start++;
+        end--;
+    }
+    for (i = 0; i < newLeft; i++)
+    {
+
+        for (j = i + 1; j < newLeft; j++)
+        {
+
+            if (tmp[i] > tmp[j])
+            {
+
+                a =  tmp[i];
+                tmp[i] = tmp[j];
+                tmp[j] = a;
+
+            }
+
+        }
+
+    }
+    start =0;
+    end = length - 1;
+    while (start < end)
+    {
+        temp = tmp[start];
+        tmp[start] = tmp[end];
+        tmp[end] = temp;
+        start++;
+        end--;
+    }
+    for (i = 0; i < right; i++)
+    {
+
+        for (j = i + 1; j < right; j++)
+        {
+
+            if (tmp[i] > tmp[j])
+            {
+
+                a =  tmp[i];
+                tmp[i] = tmp[j];
+                tmp[j] = a;
+
+            }
+
+        }
+
+    }
+    for (i = 0; i < length; i++)
+        printf("%d\n", tmp[i]);
+    fclose(readfile);
+    return 0;
+}
