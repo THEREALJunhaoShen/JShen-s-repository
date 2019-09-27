@@ -1,0 +1,126 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Node
+{
+    int data;
+    struct Node *next;
+};
+struct node *newNode(int new_data)
+{
+    struct node* new_node = (struct node*) malloc(sizeof(struct node));
+    new_node->data = new_data;
+    new_node->next = NULL;
+    return new_node;
+}
+void sortedInsert(struct Node** head_ref, struct Node* new_node)
+{
+    struct Node* current;
+    /* Special case for the head end */
+    if (*head_ref == NULL || (*head_ref)->data >= new_node->data)
+    {
+        new_node->next = *head_ref;
+        *head_ref = new_node;
+    }
+    else
+    {
+        /* Locate the node before the point of insertion */
+        current = *head_ref;
+        while (current->next!=NULL &&
+               current->next->data < new_node->data)
+        {
+            current = current->next;
+        }
+        new_node->next = current->next;
+        current->next = new_node;
+    }
+}
+void deleteNode(struct Node **head_ref, int key)
+{
+    // Store head node
+    struct Node* temp = *head_ref, *prev;
+
+    // If head node itself holds the key to be deleted
+    if (temp != NULL && temp->data == key)
+    {
+        *head_ref = temp->next;   // Changed head
+        free(temp);               // free old head
+        return;
+    }
+
+    // Search for the key to be deleted, keep track of the
+    // previous node as we need to change 'prev->next'
+    while (temp != NULL && temp->data != key)
+    {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    // If key was not present in linked list
+    if (temp == NULL) return;
+
+    // Unlink the node from linked list
+    prev->next = temp->next;
+
+    free(temp);  // Free memory
+}
+int main (int argc, char *argv[]){
+    FILE* fp = fopen(argv[1],"r");
+    if(fp == NULL){
+        return 0;
+    }
+    char op[10];
+    int num;
+    struct Node *head = NULL;
+    while(fscanf(fp, "%s\t%d", op, &num) == 2){
+        if (strcmp(op, "i") == 0)
+        {
+            struct node *new_node = newNode(num);
+            sortedInsert(&head, new_node);
+        }
+        else if(strcmp(op, "d") == 0){
+            int count=0;
+            struct node *temp;
+            struct node *temp1;
+            temp=head;
+            while(temp!=NULL)
+            {
+                temp1=head;
+                while(temp1!=NULL)
+                {
+                    if(strcmp(temp->data,temp1->data)==0)
+                    {
+                        count++;
+                        break;
+                    }
+                    temp1=temp1->next;
+                }
+                if(count>0)
+                {
+                    break;
+                }
+                temp=temp->next;
+            }
+            if (count>0) {
+                deleteNode(&head, num);
+            }
+        }
+    }
+    fclose(fp);
+    int count = 0;
+    struct Node* current = head;
+    while (current != NULL)
+    {
+        count++;
+        current = current->next;
+    }
+    printf("%d\n",count);
+    struct node *temp = head;
+    while(temp != NULL)
+    {
+        printf("%d\t", temp->data);
+        temp = temp->next;
+    }
+    return 0;
+}
